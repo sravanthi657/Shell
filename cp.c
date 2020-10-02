@@ -1,30 +1,13 @@
 #include"allin_header.h"
-int ind=0,cind=0,processp=0,pipo=0,bg=0;
+int ind=0,cind=0,processp=0,pipo=0;
 char cp_cinp[MAX_INPUT+1];char** arg;char** cmd_parse;
-char* my_comm[]={"cd","pwd","ls","pinfo","exit"};
-char* advan_comm[]={"setenv","unsetenv"};
-void check_cmndbg(int i)
-{
-	for (int j=0; cmd_parse[i][j]; ++j)
-			if (cmd_parse[i][j] == '&'){
-				cmd_parse[i][j] = '\0';bg = 1;return;}
-	return;
-}
+char* my_comm[]={"cd","pwd","echo","ls","pinfo","exit"};
+int comm_sz= sizeof(my_comm)/sizeof(char*);
 int is_mycomm(char *cmnd)
 {
-	int comm_sz= sizeof(my_comm)/sizeof(char*);
 	for(int i=0;i<comm_sz;i++)
 	{
 		if(strcmp(cmnd,my_comm[i])==0)return i;
-	}
-	return -1;
-}
-int is_advan(char* cmnd)
-{
-	int comm_sz= sizeof(advan_comm)/sizeof(char*);
-	for(int i=0;i<comm_sz;i++)
-	{
-		if(strcmp(cmnd,advan_comm[i])==0)return i;
 	}
 	return -1;
 }
@@ -60,39 +43,41 @@ int is_bg()
 
 int store_cmdline(char * folde)
 {
-	if(strlen(folde)>MAX_INPUT){puts("Exceeded the MAX_INPUT "); _Exit(1);}
-	char*mainlem=strtok(folde,"\n");char*cp_mainlem=strdup(mainlem);
-	if(mainlem==NULL)return -1;
-	cmd_parse=parse(cp_mainlem,";");
+	if(strlen(folde)>MAX_INPUT){puts("Shell: Exceeded the MAX_INPUT");_Exit(1);}
+	char*mainlem=strtok(folde,";\n");if(mainlem==NULL) return -1;
+	cmd_parse=parse(folde,";");
+	printf("%s\n",cmd_parse[0]);
 	strcpy(cp_cinp,mainlem);
-	mainlem=strtok(folde," ");
+	mainlem=strtok(folde," ");cind=0;
+	while(mainlem!=0)
+	{
+		cinp[cind]=mainlem;
+		cind++;mainlem=strtok(0," ");
+	}
+	if((strcmp(cinp[cind-1],"&")==0)){ cinp[cind-1]=NULL;return 1;}
 	return 0;
 }
 
 void check_for_inp(char* folde)
 {
 	ind=0;cind=0;int already=0;pipo=0;
-	int ret=store_cmdline(folde);if(ret==-1) return;
-	for(int i=0;cmd_parse[i]!=NULL;++i)
+	int bg=store_cmdline(folde);
+	if(bg==-1) return;
+	int piped=pipe_comm(); printf("piped%d\n",piped); if(piped!=-1)return ;
+	if(is_mycomm(cinp[0])>=0){perform(cinp[0]);is_bg();return;}
+	for(int i=0;cmd_parse[i]!=NULL;i++)
 	{
-		bg=0;int piped=pipe_comm(cmd_parse[i]);if(piped!=-1)continue ;
-		check_cmndbg(i);
-		char*cp_cmnd=strdup(cmd_parse[i]);
-		cinp=parse(cp_cmnd," &\n\t\v\f\r\a"); 
-		for(int j=0;cinp[j]!=NULL;j++,cind++);
-		if(is_mycomm(cinp[0])>=0){perform(cinp[0]);is_bg();continue;}
 		pid_t str_pid,wai_pid;
 		str_pid=fork();int status=0;
 		if(str_pid==0)
 		{
-			if (bg) setpgid(0, 0);
-			arg = redirect_handler(cmd_parse[i]);int check=is_mycomm(cinp[0]);
+			printf("inpid=%s\n",cmd_parse[i]);
+			arg = redirect_handler(cmd_parse[i]);
+			//printf("args_interpret\n");			
 			if(!arg)exit(0);
-			if(strcmp(cinp[0],"echo")==0)perform(cinp[0]);
-			else if(check>=0){bg=0;perform(cinp[0]);}
-			else{
-			 check=execvp(arg[0],arg);if(check<0){perror("");_Exit(1);} }
-			exit(0);
+			printf("args=%s\n",arg[0]);
+			int check=execvp(arg[0],arg);
+			if(check<0){perror("");_Exit(1);}
 		}
 		else
 		{
@@ -113,10 +98,8 @@ void check_for_inp(char* folde)
 				printf("[+] %s [%d]\n",cinp[0],str_pid);
 			}
 		}
-		free(cp_cmnd);
-
 	}
-	if(cmd_parse==NULL)
+	if(cind)
 		perror("Input is nothing or space ");
 	is_bg();
 	return;

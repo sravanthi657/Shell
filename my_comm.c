@@ -3,30 +3,30 @@
 int perform(char*cmd)
 {
 	int flg=-1;int what_is=-1;
-	if((strcmp(cinp[0],"cd")==0) && cind<3){
-		if(cind>1) cd(cinp[1]);
+	if((strcmp(cmd,"cd")==0) && cind<3){
+		if(cind>1){cd(cinp[1]);}
 		else
 			chdir(shell_h);}
-	else if((strcmp(cinp[0],"pwd")==0) && cind<2)
+	else if((strcmp(cmd,"pwd")==0) && cind<2)
 	{
 		getcwd(pwdis,pm+2);printf("%s\n",pwdis);return 0;
 	}
-	else if(strcmp(cinp[0],"echo")==0)
-	{
+	else if(strcmp(cmd,"echo")==0)
+	{		
 		int i=1;
 		while(i<cind){
 			printf("%s ",cinp[i]);i++;}
 		printf("\n");
 		return 0;	
 	}
-	else if(strcmp(cinp[0],"exit")==0)
+	else if(strcmp(cmd,"exit")==0)
 	{
 		printf("\nLeaving...\n");
 		exit(1); 
 	}
-	else if(strcmp(cinp[0],"ls")==0)
+	else if(strcmp(cmd,"ls")==0)
 	{
-		char *only="ha";int ind=0,i=1;
+		char *only="ha";int ind=0,i=1; 
 		if(cind==1)what_is=ls(only,3);
 		else if((strcmp(cinp[i],".")==0) ||(strcmp(cinp[i],"./")==0))what_is=ls(only,3);
 		else if(strcmp(cinp[i],"-l")==0)
@@ -95,7 +95,7 @@ int perform(char*cmd)
 		else
 			what_is=ls(cinp[1],flg);
 	}
-	else if(strcmp(cinp[0],"pinfo")==0)
+	else if(strcmp(cmd,"pinfo")==0)
 	{
 		if(cind>1){
 			if(cind>2){printf("Pinfo too many arguments\n");perror("pinf");return -1;}

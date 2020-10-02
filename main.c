@@ -1,5 +1,5 @@
 #include"allin_header.h"
-
+char *folder;
 void handle_ctrlC(int sig_num)
 {
     if(CUR_FG==-1)
@@ -30,12 +30,13 @@ int main()
 	if(gethostname(hostis,HOST_NAME_MAX+2)!=0)perror("Hostname ");
 	if(getlogin_r(useris,LOGIN_NAME_MAX+2)!=0)perror("login ");
 	getcwd(shell_h,pm+2);strcpy(now,"~");
-	size_t fold_sz=256;char *folder=NULL;int read_inp;
+	size_t fold_sz=MAX_INPUT+1;folder=NULL;int read_inp;
 	char *just="$";strcat(now,just);
 	while(1)
 	{
-		getnoww(); signal(SIGINT,handle_ctrlC);signal(SIGTSTP,handle_ctrlZ);
-		printf("%s@%s:%s ",useris,hostis,now);
+		getnoww(); 
+		printf("%s@%s:%s ",useris,hostis,now);CUR_FG=-1;CUR_FGis=NULL;
+		signal(SIGINT,handle_ctrlC);signal(SIGTSTP,handle_ctrlZ);
 		read_inp=getline(&folder,&fold_sz,stdin);
 		if(read_inp)check_for_inp(folder);
 		is_bg();

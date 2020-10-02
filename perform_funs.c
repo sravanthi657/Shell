@@ -25,8 +25,7 @@ int direxists(char* dirname){
 
 int cd(char * flag)
 {
-	//printf("Yes cd\n %s",flag);
-	if((strcmp(flag,"~")==0) || (cind==1))
+	if((strcmp(flag,"~")==0))
 	{
 		int check=chdir(shell_h);if(check<0){perror("home directory error");return -1;}
 	}
