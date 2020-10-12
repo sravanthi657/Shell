@@ -1,15 +1,15 @@
-#Shell
+# Shell
 
-##" To run the shell enter ./shell "
+## " To run the shell enter ./shell "
 
 
 I implemented commands like <br />
-__ (1) cd
-____	in this: <br />
-____	(a) .  ./ <br />
-____	(b) ~  <br />
-____	(d) .. ../ <br />
-____	(c) Directory name <br />
+ (1) cd
+	in this: <br />
+	(a) .  ./ <br />
+	(b) ~  <br />
+	(d) .. ../ <br />
+	(c) Directory name <br />
 <br />
 (2) pwd<br />
 (3) ls<br />
