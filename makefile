@@ -1,2 +1,2 @@
-shell : shell.c my_comm.c perform_funs.c main.c pipe_comm.c redirect_comm.c
-	    gcc -o shell shell.c my_comm.c perform_funs.c main.c pipe_comm.c redirect_comm.c
+shell : shell.c basic_cmnds.c perform_basic_funs.c main.c pipe_cmnd.c redirect_cmnd.c advan_cmnds.c advan_perform.c parse_trim.c
+	    gcc -o shell shell.c basic_cmnds.c perform_basic_funs.c main.c pipe_cmnd.c redirect_cmnd.c advan_cmnds.c advan_perform.c parse_trim.c

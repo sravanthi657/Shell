@@ -1,5 +1,5 @@
 #include"allin_header.h"
-char *folder;
+char *folder;int what_now=0;
 void handle_ctrlC(int sig_num)
 {
     if(CUR_FG==-1)
@@ -35,10 +35,11 @@ int main()
 	while(1)
 	{
 		getnoww(); 
-		printf("%s@%s:%s ",useris,hostis,now);CUR_FG=-1;CUR_FGis=NULL;
+		printf("\033[1;32m%s@%s:\033[1;35m%s ",useris,hostis,now);CUR_FG=-1;CUR_FGis=NULL;printf("\033[0m");
 		signal(SIGINT,handle_ctrlC);signal(SIGTSTP,handle_ctrlZ);
 		read_inp=getline(&folder,&fold_sz,stdin);
-		if(read_inp)check_for_inp(folder);
+		if(read_inp){what_now=check_for_inp(folder);
+			if(what_now==-1)exit(0);}
 		is_bg();
 	}
 	return 0;

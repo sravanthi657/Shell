@@ -1,4 +1,7 @@
 In my shell 
+" To run the shell enter ./shell "
+
+
 I implemented commands like 
 (1) cd
 	in this:
@@ -24,3 +27,7 @@ Handled background and foreground processes seperately
 When the background processes id initalised it specifies its pid and state to us.
 also pinfo for shell and pinfo one flag.
 pinfo includes pid ans memory status exectuable path too.
+
+
+bg , fg ,setenv , unsetenv , overkill are implmented.
+with constraints at arguments.

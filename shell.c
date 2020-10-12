@@ -1,8 +1,21 @@
 #include"allin_header.h"
+
 int ind=0,cind=0,processp=0,pipo=0,bg=0;
 char cp_cinp[MAX_INPUT+1];char** arg;char** cmd_parse;
-char* my_comm[]={"cd","pwd","ls","pinfo","exit"};
-char* advan_comm[]={"setenv","unsetenv"};
+char* my_comm[]={"cd","pwd","ls","pinfo","quit"};
+char* advan_comm[]={"setenv","unsetenv","jobs","kjob","fg","bg","overkill"};
+
+char** handler_ctrl(char* pt)
+{
+    char** comd=malloc(MAX_INPUT*sizeof(char*));
+    char *sep = ";\n";
+    int count = 0;
+    comd[count++] = strtok(pt,sep);
+    while(comd[count-1])
+        comd[count++] = strtok(NULL,sep);
+    comd[count++] = NULL;
+    return comd;
+}
 void check_cmndbg(int i)
 {
 	for (int j=0; cmd_parse[i][j]; ++j)
@@ -60,7 +73,12 @@ int is_bg()
 
 int store_cmdline(char * folde)
 {
+	if(strcmp(folde,"\0")==0)return 3;
 	if(strlen(folde)>MAX_INPUT){puts("Exceeded the MAX_INPUT "); _Exit(1);}
+	char* doit=strdup(folde);
+	char** comd=handler_ctrl(doit);int ioo=0;
+	while(comd[ioo]!=NULL){ioo++;break;}
+	if(ioo==0)return -1;
 	char*mainlem=strtok(folde,"\n");char*cp_mainlem=strdup(mainlem);
 	if(mainlem==NULL)return -1;
 	cmd_parse=parse(cp_mainlem,";");
@@ -69,10 +87,12 @@ int store_cmdline(char * folde)
 	return 0;
 }
 
-void check_for_inp(char* folde)
+int check_for_inp(char* folde)
 {
 	ind=0;cind=0;int already=0;pipo=0;
-	int ret=store_cmdline(folde);if(ret==-1) return;
+	int ret=store_cmdline(folde);
+	if(ret==-1) return 1;
+	else if(ret==3)return -1;
 	for(int i=0;cmd_parse[i]!=NULL;++i)
 	{
 		bg=0;int piped=pipe_comm(cmd_parse[i]);if(piped!=-1)continue ;
@@ -80,7 +100,17 @@ void check_for_inp(char* folde)
 		char*cp_cmnd=strdup(cmd_parse[i]);
 		cinp=parse(cp_cmnd," &\n\t\v\f\r\a"); 
 		for(int j=0;cinp[j]!=NULL;j++,cind++);
-		if(is_mycomm(cinp[0])>=0){perform(cinp[0]);is_bg();continue;}
+		if(is_mycomm(cinp[0])>=0)
+		{
+			perform(cinp[0]);is_bg();continue;
+		}
+		else if(is_advan(cinp[0])>=0)
+		{
+			int indo=is_advan(cinp[0]);
+			if((indo>1)&&(ind<6))advan_funs("jobs");
+			else advan_funs(cinp[0]);
+			is_bg();continue;
+		}
 		pid_t str_pid,wai_pid;
 		str_pid=fork();int status=0;
 		if(str_pid==0)
@@ -114,11 +144,8 @@ void check_for_inp(char* folde)
 			}
 		}
 		free(cp_cmnd);
-
 	}
-	if(cmd_parse==NULL)
-		perror("Input is nothing or space ");
 	is_bg();
-	return;
+	return 0;
 }
 
