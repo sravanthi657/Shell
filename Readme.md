@@ -1,6 +1,7 @@
 # Shell
 
-## " To run the shell enter ./shell "
+## " To begin the shell run ./shell " 
+### " To quit from the shell enter quit "
 
 
 I implemented commands like <br />
